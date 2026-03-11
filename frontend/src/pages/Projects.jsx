@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import ProjectCard from '../components/ProjectCard';
 import { Plus, Search, X } from 'lucide-react';
 
@@ -26,7 +26,7 @@ const Projects = () => {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5001/api/projects');
+      const res = await api.get('/projects');
       setProjects(res.data);
     } catch (err) {
       console.error(err);
@@ -39,7 +39,7 @@ const Projects = () => {
     if (!token) return alert('Please login to see recommendations');
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5001/api/projects/recommended', {
+      const res = await api.get('/projects/recommended', {
         headers: { 'x-auth-token': token }
       });
       setProjects(res.data);
@@ -53,7 +53,7 @@ const Projects = () => {
   const handleApply = async (id) => {
     if (!token) return alert('Please login to apply');
     try {
-      await axios.post(`http://localhost:5001/api/projects/${id}/apply`, {}, {
+      await api.post(`/projects/${id}/apply`, {}, {
         headers: { 'x-auth-token': token }
       });
       alert('Application sent successfully!');
@@ -64,11 +64,11 @@ const Projects = () => {
 
   const handleManage = async (id) => {
     try {
-      const res = await axios.get(`http://localhost:5001/api/projects/${id}`);
+      const res = await api.get(`/projects/${id}`);
       setManageProject(res.data);
 
       // fetch AI matched applicants
-      const matchesRes = await axios.get(`http://localhost:5001/api/projects/${id}/matches`, {
+      const matchesRes = await api.get(`/projects/${id}/matches`, {
         headers: { 'x-auth-token': token }
       });
       setMatches(matchesRes.data);
@@ -80,7 +80,7 @@ const Projects = () => {
 
   const handleApprove = async (projectId, userId) => {
     try {
-      await axios.post(`http://localhost:5001/api/projects/${projectId}/approve/${userId}`, {}, {
+      await api.post(`/projects/${projectId}/approve/${userId}`, {}, {
         headers: { 'x-auth-token': token }
       });
       alert('User approved!');
@@ -97,7 +97,7 @@ const Projects = () => {
   const handleCompleteProject = async (projectId) => {
     if (!window.confirm('Are you sure you want to mark this project as completed? This will grant reputation to all members.')) return;
     try {
-      await axios.post(`http://localhost:5001/api/projects/${projectId}/complete`, {}, {
+      await api.post(`/projects/${projectId}/complete`, {}, {
         headers: { 'x-auth-token': token }
       });
       alert('Project marked as completed!');
@@ -116,7 +116,7 @@ const Projects = () => {
         ...newProject,
         skillsNeeded: newProject.skillsNeeded.split(',').map(s => s.trim())
       };
-      const res = await axios.post('http://localhost:5001/api/projects', payload, {
+      const res = await api.post('/projects', payload, {
         headers: { 'x-auth-token': token }
       });
       setProjects([res.data, ...projects]);

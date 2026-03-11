@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { Terminal, Loader2 } from 'lucide-react';
 
@@ -20,10 +20,10 @@ const Login = () => {
     setLoading(true);
     setError('');
 
-    const url = isLogin ? 'http://localhost:5001/api/auth/login' : 'http://localhost:5001/api/auth/register';
+    const path = isLogin ? '/auth/login' : '/auth/register';
     
     try {
-      const res = await axios.post(url, formData);
+      const res = await api.post(path, formData);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       navigate('/projects');

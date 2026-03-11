@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Trophy, Star, Medal, Loader2, Award } from 'lucide-react';
 
 const Leaderboard = () => {
@@ -12,7 +12,7 @@ const Leaderboard = () => {
 
   const fetchLeaderboard = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/auth/leaderboard');
+      const res = await api.get('/auth/leaderboard');
       setLeaders(res.data);
     } catch (err) {
       console.error(err);

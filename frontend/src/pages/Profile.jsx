@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { User as UserIcon, Settings, Github, Globe, Edit3, Loader2, Code2, Star, Award } from 'lucide-react';
 
 const Profile = () => {
@@ -20,7 +20,7 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/auth/me', {
+      const res = await api.get('/auth/me', {
         headers: { 'x-auth-token': token }
       });
       setProfile(res.data);
@@ -44,7 +44,7 @@ const Profile = () => {
         ...editForm,
         skills: editForm.skills.split(',').map(s => s.trim())
       };
-      const res = await axios.put('http://localhost:5001/api/auth/profile', payload, {
+      const res = await api.put('/auth/profile', payload, {
         headers: { 'x-auth-token': token }
       });
       setProfile(res.data);

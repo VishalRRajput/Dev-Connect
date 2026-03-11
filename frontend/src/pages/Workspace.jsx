@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import io from 'socket.io-client';
+import { api, socket } from '../api';
 import { Send, MessageSquare, Loader2, ListTodo, Plus, X, CheckCircle2, Circle, Clock, User as UserIcon } from 'lucide-react';
-
-const socket = io.connect('http://localhost:5001');
 
 const Workspace = () => {
   const [projects, setProjects] = useState([]);
@@ -54,7 +51,7 @@ const Workspace = () => {
 
   const fetchUserProjects = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/auth/me', {
+      const res = await api.get('/auth/me', {
         headers: { 'x-auth-token': token }
       });
       setUser(res.data);
@@ -98,7 +95,7 @@ const Workspace = () => {
   // --- TASK LOGIC ---
   const fetchTasks = async (projectId) => {
     try {
-      const res = await axios.get(`http://localhost:5001/api/tasks/project/${projectId}`, {
+      const res = await api.get(`/tasks/project/${projectId}`, {
         headers: { 'x-auth-token': token }
       });
       setTasks(res.data);
@@ -111,7 +108,7 @@ const Workspace = () => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
     try {
-      const res = await axios.post(`http://localhost:5001/api/tasks/project/${activeProject._id}`, 
+      const res = await api.post(`/tasks/project/${activeProject._id}`, 
         { title: newTaskTitle, description: newTaskDesc },
         { headers: { 'x-auth-token': token } }
       );
@@ -126,7 +123,7 @@ const Workspace = () => {
 
   const updateTaskStatus = async (taskId, newStatus) => {
     try {
-      const res = await axios.put(`http://localhost:5001/api/tasks/${taskId}/status`, 
+      const res = await api.put(`/tasks/${taskId}/status`, 
         { status: newStatus },
         { headers: { 'x-auth-token': token } }
       );
@@ -138,7 +135,7 @@ const Workspace = () => {
 
   const assignTaskToSelf = async (taskId) => {
     try {
-      const res = await axios.put(`http://localhost:5001/api/tasks/${taskId}/assign`, 
+      const res = await api.put(`/tasks/${taskId}/assign`, 
         { userId: user._id },
         { headers: { 'x-auth-token': token } }
       );
@@ -150,7 +147,7 @@ const Workspace = () => {
 
   const verifyTask = async (taskId) => {
     try {
-      const res = await axios.put(`http://localhost:5001/api/tasks/${taskId}/verify`, 
+      const res = await api.put(`/tasks/${taskId}/verify`, 
         {},
         { headers: { 'x-auth-token': token } }
       );
