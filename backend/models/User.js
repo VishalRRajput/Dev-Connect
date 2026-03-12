@@ -10,7 +10,8 @@ const UserSchema = new mongoose.Schema({
   portfolio: { type: String },
   joinedProjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
   reputationScore: { type: Number, default: 0 },
-  projectsCompleted: { type: Number, default: 0 }
+  projectsCompleted: { type: Number, default: 0 },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

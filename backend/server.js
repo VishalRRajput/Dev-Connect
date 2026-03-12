@@ -47,11 +47,24 @@ app.use('/api/tasks', taskRoutes);
 const PORT = process.env.PORT || 5001;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://vishalrajput2522_db_user:QrzevfoV8z1h0NzA@cluster0.z1d6woa.mongodb.net/?appName=Cluster0';
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-    server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+// MongoDB Connection
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
     });
-  })
-  .catch((err) => console.log('MongoDB connection error:', err));
+    console.log('✅ Connected to MongoDB Atlas');
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('❌ MongoDB Connection Error:', err.message);
+    if (err.code === 'ECONNREFUSED' || err.message.includes('querySrv')) {
+      console.error('\n💡 TIP: Your network or DNS might be blocking MongoDB SRV records.');
+      console.error('Try switching your DNS to 8.8.8.8 or check if your firewall/VPN is blocking Atlas.');
+    }
+    process.exit(1);
+  }
+};
+
+connectDB();

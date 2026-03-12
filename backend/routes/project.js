@@ -3,6 +3,7 @@ const router = express.Router();
 const Project = require('../models/Project');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const admin = require('../middleware/admin'); // Bug 2 Fix: moved to top
 
 // Middleware to protect routes
 const auth = (req, res, next) => {
@@ -83,6 +84,22 @@ router.get('/recommended', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/projects/admin/all
+// @desc    Get all projects (Admin only)
+// Bug 3 Fix: Moved ABOVE /:id to prevent Express from matching 'admin' as an :id param
+router.get('/admin/all', [auth, admin], async (req, res) => {
+  try {
+    const projects = await Project.find()
+      .populate('owner', 'name email')
+      .populate('members', 'name email skills')
+      .sort({ createdAt: -1 });
+    res.json(projects);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET api/projects/:id
 // @desc    Get project by ID
 router.get('/:id', async (req, res) => {
@@ -133,7 +150,7 @@ router.get('/:id/matches', auth, async (req, res) => {
       };
     }).filter(m => m.matchScore > 0) // only return users with at least some match
       .sort((a, b) => b.matchScore - a.matchScore) // Highest match first
-      .limit(10);
+      .slice(0, 10); // Bug 1 Fix: .limit() is Mongoose-only; use .slice() on plain JS arrays
 
     res.json(matches);
   } catch (err) {
@@ -242,5 +259,7 @@ router.post('/:id/complete', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+// (Admin route moved above /:id — see line ~88)
 
 module.exports = router;

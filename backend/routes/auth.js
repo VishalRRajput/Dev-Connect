@@ -9,6 +9,18 @@ const jwt = require('jsonwebtoken');
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
   try {
+    // Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ msg: 'Please provide a valid email address' });
+    }
+
+    // Strong password check: min 8 chars, 1 number, 1 special char
+    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ msg: 'Password must be at least 8 characters long and contain at least one number and one special character' });
+    }
+
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ msg: 'User already exists' });
@@ -21,7 +33,7 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
-    const payload = { user: { id: user.id } };
+    const payload = { user: { id: user.id, role: user.role } };
 
     jwt.sign(
       payload,
@@ -29,7 +41,7 @@ router.post('/register', async (req, res) => {
       { expiresIn: 360000 },
       (err, token) => {
         if (err) throw err;
-        res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+        res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
       }
     );
   } catch (err) {
@@ -53,7 +65,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid Credentials' });
     }
 
-    const payload = { user: { id: user.id } };
+    const payload = { user: { id: user.id, role: user.role } };
 
     jwt.sign(
       payload,
@@ -61,7 +73,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: 360000 },
       (err, token) => {
         if (err) throw err;
-        res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+        res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
       }
     );
   } catch (err) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Terminal, LogOut, User, MessageSquare, Briefcase, Trophy } from 'lucide-react';
+import { Terminal, LogOut, User, MessageSquare, Briefcase, Trophy, Shield } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -38,15 +38,21 @@ const Navbar = () => {
             <>
               <Link to="/workspace" className={`flex items-center space-x-1 transition ${isActive('/workspace') ? 'text-blue-400' : 'text-gray-300 hover:text-white'}`}>
                 <MessageSquare size={18} />
-                <span>Workspace</span>
+                <span className="hidden sm:inline">Workspace</span>
               </Link>
               <Link to="/profile" className={`flex items-center space-x-1 transition ${isActive('/profile') ? 'text-blue-400' : 'text-gray-300 hover:text-white'}`}>
                 <User size={18} />
-                <span>Profile</span>
+                <span className="hidden sm:inline">Profile</span>
               </Link>
+              {JSON.parse(localStorage.getItem('user') || '{}').role === 'admin' && (
+                <Link to="/admin" className={`flex items-center space-x-1 transition ${isActive('/admin') ? 'text-purple-400' : 'text-gray-300 hover:text-white'}`}>
+                  <Shield size={18} />
+                  <span className="hidden sm:inline">Admin</span>
+                </Link>
+              )}
               <button onClick={handleLogout} className="flex items-center space-x-1 text-red-400 hover:text-red-300 transition">
                 <LogOut size={18} />
-                <span>Logout</span>
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </>
           ) : (
