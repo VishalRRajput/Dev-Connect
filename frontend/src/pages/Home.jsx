@@ -15,28 +15,28 @@ const FeatureCard = ({ icon: Icon, title, desc }) => (
 
 const Home = () => {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[80vh]">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
             {/* Hero Section */}
-            <div className="text-center max-w-4xl mx-auto pt-20 pb-16">
-                <div className="inline-block px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300  font-medium mb-8 animate-pulse text-xs">
+            <div className="text-center max-w-4xl mx-auto pt-10 md:pt-20 pb-16">
+                <div className="inline-block px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300 font-medium mb-6 md:mb-8 animate-pulse text-[10px] md:text-xs">
                     🚀 The Ultimate Developer Collaboration Platform
                 </div>
-                <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
+                <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight mb-6 md:mb-8 leading-tight">
                     Build Together, <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400">
                         Ship Faster.
                     </span>
                 </h1>
-                <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
                     Find the perfect teammates for your next side project. Connect, collaborate, and bring your ideas to life with developers worldwide.
                 </p>
 
-                <div className="flex items-center justify-center gap-4">
-                    <Link to="/projects" className="px-8 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg transition shadow-xl shadow-blue-500/20 flex items-center gap-2 group">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link to="/projects" className="w-full sm:w-auto px-8 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg transition shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 group">
                         Browse Projects
                         <ArrowRight className="group-hover:translate-x-1 transition" size={20} />
                     </Link>
-                    <Link to="/login" className="px-8 py-4 rounded-full bg-gray-800 hover:bg-gray-700 text-white font-bold text-lg transition border border-gray-700">
+                    <Link to="/login" className="w-full sm:w-auto px-8 py-4 rounded-full bg-gray-800 hover:bg-gray-700 text-white font-bold text-lg transition border border-gray-700 text-center">
                         Join Now
                     </Link>
                 </div>

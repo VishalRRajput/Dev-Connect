@@ -194,13 +194,13 @@ const Projects = () => {
       {/* Create Project Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="glass-panel w-full max-w-2xl rounded-2xl md:p-8 p-6 relative">
+          <div className="glass-panel w-full max-w-2xl rounded-2xl md:p-8 p-6 relative overflow-y-auto max-h-[95vh]">
             <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white transition">
               <X size={24} />
             </button>
             <h2 className="text-2xl font-bold text-white mb-6">Post a New Project</h2>
             
-            <form onSubmit={handleCreateProject} className="space-y-5">
+            <form onSubmit={handleCreateProject} className="space-y-4 md:space-y-5">
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Project Title</label>
                 <input required type="text" value={newProject.title} onChange={e => setNewProject({...newProject, title: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="E.g. AI Resume Analyzer" />
@@ -211,7 +211,7 @@ const Projects = () => {
                 <textarea required rows={4} value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Describe the goal and features..." />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-400 mb-1">Skills Needed (comma separated)</label>
                   <input required type="text" value={newProject.skillsNeeded} onChange={e => setNewProject({...newProject, skillsNeeded: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="React, Node.js, AI" />
@@ -222,7 +222,7 @@ const Projects = () => {
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3">
+              <div className="pt-4 flex flex-col sm:flex-row justify-end gap-3">
                 <button type="button" onClick={() => setShowModal(false)} className="px-6 py-3 rounded-xl bg-gray-800 text-white hover:bg-gray-700 transition">Cancel</button>
                 <button type="submit" className="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition shadow-lg shadow-blue-500/20 font-medium">Create Project</button>
               </div>
@@ -237,22 +237,22 @@ const Projects = () => {
             <button onClick={() => setManageProject(null)} className="absolute top-6 right-6 text-gray-400 hover:text-white transition">
               <X size={24} />
             </button>
-            <div className="flex justify-between items-start mb-6 border-b border-gray-800 pb-6 pr-8">
+            <div className="flex flex-col md:flex-row justify-between items-start mb-6 border-b border-gray-800 pb-6 md:pr-8 gap-4">
               <div>
-                <h2 className="text-3xl font-bold text-white mb-2">{manageProject.title}</h2>
-                <p className="text-gray-400">Manage your project members and applicants.</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{manageProject.title}</h2>
+                <p className="text-gray-400 text-sm md:text-base">Manage your project members and applicants.</p>
               </div>
               {manageProject.status !== 'Completed' && (
                 <button 
                   onClick={() => handleCompleteProject(manageProject._id)}
-                  className="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap"
+                  className="w-full md:w-auto bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap"
                 >
                   Mark as Completed
                 </button>
               )}
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Members List */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Current Team ({manageProject.members.length}/{manageProject.teamSize})</h3>

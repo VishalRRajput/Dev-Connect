@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api, socket } from '../api';
-import { Send, MessageSquare, Loader2, ListTodo, Plus, X, CheckCircle2, Circle, Clock, User as UserIcon } from 'lucide-react';
+import { Send, MessageSquare, Loader2, ListTodo, Plus, X, CheckCircle2, Circle, Clock, User as UserIcon, ChevronLeft } from 'lucide-react';
 
 const Workspace = () => {
   const [projects, setProjects] = useState([]);
   const [activeProject, setActiveProject] = useState(null);
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'tasks'
+  const [showMobileSidebar, setShowMobileSidebar] = useState(true);
   
   // Chat State
   const [messages, setMessages] = useState({});
@@ -69,6 +70,7 @@ const Workspace = () => {
 
   const joinRoom = (project) => {
     setActiveProject(project);
+    setShowMobileSidebar(false);
     socket.emit('join_project', { projectId: project._id });
   };
 
@@ -172,17 +174,22 @@ const Workspace = () => {
   if (!user) return <div className="text-center py-20 text-gray-400 text-xl font-semibold">Please log in to access your workspace.</div>;
 
   return (
-    <div className="flex glass-panel rounded-3xl overflow-hidden h-[80vh] max-w-7xl mx-auto mt-4 border border-gray-800 shadow-2xl relative">
+    <div className="flex flex-col md:flex-row glass-panel rounded-3xl overflow-hidden min-h-[85vh] md:h-[80vh] max-w-7xl mx-auto mt-4 border border-gray-800 shadow-2xl relative">
        <div className="absolute top-0 left-0 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl -ml-32 -mt-32 pointer-events-none"></div>
       
       {/* Sidebar */}
-      <div className="w-1/4 bg-gray-900/50 border-r border-gray-800 flex flex-col relative z-10">
-        <div className="p-6 border-b border-gray-800 bg-gray-900/80">
+      <div className={`w-full md:w-1/4 bg-gray-900/50 border-r border-gray-800 md:flex flex-col relative z-10 ${showMobileSidebar ? 'flex' : 'hidden md:flex'}`}>
+        <div className="p-6 border-b border-gray-800 bg-gray-900/80 flex justify-between items-center">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <ListTodo className="text-blue-500" /> Workspaces
           </h2>
+          {activeProject && (
+            <button onClick={() => setShowMobileSidebar(false)} className="md:hidden text-gray-400">
+              <X size={20} />
+            </button>
+          )}
         </div>
-        <div className="overflow-y-auto flex-1 p-4 space-y-2">
+        <div className="overflow-y-auto flex-1 p-4 space-y-2 custom-scrollbar">
           {projects.length === 0 ? (
             <p className="text-gray-500 text-center py-8">You haven't joined any projects yet.</p>
           ) : (
@@ -205,21 +212,28 @@ const Workspace = () => {
       </div>
 
       {/* Main Area */}
-      <div className="flex-1 flex flex-col bg-gray-900/50 relative z-10 w-3/4">
+      <div className={`flex-1 flex flex-col bg-gray-900/50 relative z-10 w-full md:w-3/4 ${!showMobileSidebar ? 'flex' : 'hidden md:flex'}`}>
         {activeProject ? (
           <>
             {/* Header / Tabs */}
-            <div className="p-6 border-b border-gray-800 bg-gray-900/80 flex items-start justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-white flex items-center gap-3">
-                  {activeProject.title}
-                  {activeProject.status === 'Completed' && (
+            <div className="p-4 md:p-6 border-b border-gray-800 bg-gray-900/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <button 
+                  onClick={() => setShowMobileSidebar(true)}
+                  className="md:hidden p-2 -ml-2 text-gray-400 hover:text-white transition"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <div>
+                  <h3 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+                    {activeProject.title}
+                    {activeProject.status === 'Completed' && (
                     <span className="text-xs font-bold bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-full flex items-center gap-1 uppercase tracking-wider">
                       <CheckCircle2 size={12}/> Completed
                     </span>
                   )}
                 </h3>
-                <div className="text-sm text-gray-400 mt-1">Project Workspace</div>
+                <div className="text-xs md:text-sm text-gray-400 mt-0.5">Project Workspace</div>
 
                 {activeTab === 'tasks' && tasks.length > 0 && (
                   <div className="mt-4 w-64">
@@ -233,16 +247,17 @@ const Workspace = () => {
                   </div>
                 )}
               </div>
-              <div className="flex bg-gray-800 p-1 rounded-lg border border-gray-700 h-fit">
+            </div>
+            <div className="flex bg-gray-800 p-1 rounded-lg border border-gray-700 h-fit w-full sm:w-auto">
                 <button 
                   onClick={() => setActiveTab('chat')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'chat' ? 'bg-blue-600 text-white shadow' : 'text-gray-400 hover:text-white'}`}
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'chat' ? 'bg-blue-600 text-white shadow' : 'text-gray-400 hover:text-white'}`}
                 >
                   <MessageSquare size={16} /> Chat
                 </button>
                 <button 
                   onClick={() => setActiveTab('tasks')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'tasks' ? 'bg-yellow-600 text-white shadow' : 'text-gray-400 hover:text-white'}`}
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'tasks' ? 'bg-yellow-600 text-white shadow' : 'text-gray-400 hover:text-white'}`}
                 >
                   <ListTodo size={16} /> Tasks
                 </button>
@@ -250,7 +265,7 @@ const Workspace = () => {
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto relative bg-gray-900/30">
+            <div className="flex-1 overflow-y-auto relative bg-gray-900/30 custom-scrollbar">
               
               {/* --- CHAT VIEW --- */}
               {activeTab === 'chat' && (
@@ -297,11 +312,11 @@ const Workspace = () => {
               {activeTab === 'tasks' && (
                 <div className="h-full p-6 flex flex-col">
                   {/* Task Actions */}
-                  <div className="mb-6 flex justify-between items-center">
-                    <h4 className="text-lg font-bold text-white flex items-center gap-2"><ListTodo size={20} className="text-yellow-500"/> Project Kanban Board</h4>
+                  <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <h4 className="text-lg font-bold text-white flex items-center gap-2"><ListTodo size={20} className="text-yellow-500"/> Kanban Board</h4>
                     <button 
                       onClick={() => setShowTaskForm(!showTaskForm)}
-                      className="bg-gray-800 hover:bg-gray-700 text-white text-sm px-4 py-2 rounded-lg transition border border-gray-700 flex items-center gap-2"
+                      className="w-full sm:w-auto bg-gray-800 hover:bg-gray-700 text-white text-sm px-4 py-2.5 rounded-lg transition border border-gray-700 flex items-center justify-center gap-2"
                     >
                       {showTaskForm ? <X size={16} /> : <Plus size={16} />} {showTaskForm ? 'Cancel' : 'New Task'}
                     </button>
@@ -319,11 +334,11 @@ const Workspace = () => {
                      </form>
                   )}
 
-                  <div className="grid grid-cols-4 gap-4 flex-1 min-h-[500px] overflow-x-auto pb-4">
+                  <div className="flex gap-4 flex-1 min-h-[500px] overflow-x-auto pb-6 custom-scrollbar">
                      {/* Column: To Do */}
-                     <div className="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col min-w-[260px]">
+                     <div className="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col min-w-[280px] w-[280px] sm:w-auto sm:flex-1">
                         <h5 className="font-bold text-gray-300 mb-4 flex items-center gap-2"><Circle size={16} className="text-gray-500"/> To Do</h5>
-                        <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+                        <div className="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
                            {tasks.filter(t => t.status === 'To Do').map(task => (
                              <div key={task._id} className="bg-gray-800 border border-gray-700 p-4 rounded-xl hover:border-gray-600 transition group cursor-default">
                                 <h6 className="font-bold text-white text-sm mb-1">{task.title}</h6>
@@ -344,9 +359,9 @@ const Workspace = () => {
                      </div>
 
                      {/* Column: In Progress */}
-                     <div className="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col min-w-[260px]">
+                     <div className="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col min-w-[280px] w-[280px] sm:w-auto sm:flex-1">
                         <h5 className="font-bold text-blue-400 mb-4 flex items-center gap-2"><Clock size={16} /> In Progress</h5>
-                        <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+                        <div className="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
                            {tasks.filter(t => t.status === 'In Progress').map(task => (
                              <div key={task._id} className="bg-gray-800 border border-blue-900 p-4 rounded-xl hover:border-blue-700 transition group cursor-default shadow-lg shadow-blue-900/10">
                                 <h6 className="font-bold text-white text-sm mb-1">{task.title}</h6>
@@ -367,9 +382,9 @@ const Workspace = () => {
                      </div>
 
                      {/* Column: Pending Verification */}
-                     <div className="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col min-w-[260px]">
+                     <div className="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col min-w-[280px] w-[280px] sm:w-auto sm:flex-1">
                         <h5 className="font-bold text-purple-400 mb-4 flex items-center gap-2"><Clock size={16} /> Pending Verification</h5>
-                        <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+                        <div className="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
                            {tasks.filter(t => t.status === 'Pending Verification').map(task => (
                              <div key={task._id} className="bg-gray-800 border border-purple-900 p-4 rounded-xl hover:border-purple-700 transition group cursor-default shadow-lg shadow-purple-900/10">
                                 <h6 className="font-bold text-white text-sm mb-1">{task.title}</h6>
@@ -392,9 +407,9 @@ const Workspace = () => {
                      </div>
 
                      {/* Column: Verified */}
-                     <div className="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col opacity-80 min-w-[260px]">
+                     <div className="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex flex-col opacity-80 min-w-[280px] w-[280px] sm:w-auto sm:flex-1">
                         <h5 className="font-bold text-emerald-400 mb-4 flex items-center gap-2"><CheckCircle2 size={16}/> Verified</h5>
-                        <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+                        <div className="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
                            {tasks.filter(t => t.status === 'Verified').map(task => (
                              <div key={task._id} className="bg-gray-800/50 border border-gray-700/50 p-4 rounded-xl cursor-default">
                                 <h6 className="font-bold text-gray-400 text-sm mb-1 line-through">{task.title}</h6>
